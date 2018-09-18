@@ -63,7 +63,7 @@ def getEmotion(faceDictionary):
 
 
 # Replace <Subscription Key> with your valid subscription key.
-subscription_key = "1ed933c3d81f4b5d8b998c81f3f48cf8"
+subscription_key = ""
 assert subscription_key
 
 # You must use the same region in your REST call as you used to get your
