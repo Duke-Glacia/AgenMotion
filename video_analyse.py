@@ -12,7 +12,7 @@ from io import BytesIO
 import numpy as np
 
 
-    
+ #Get the coordinate of the faces   
 def getRectangle(faceDictionary):
     rect = faceDictionary['faceRectangle']
     left = rect['left']
@@ -20,31 +20,25 @@ def getRectangle(faceDictionary):
     bottom = left + rect['height']
     right = top + rect['width']
     return ((left, top), (bottom, right))
-
+#Get the (predicted) age of the face
 def getAge(faceDictionary):
     f=faceDictionary['faceAttributes']
     age=f['age']
     return age
+#Get the (prredicted gender)
 def getGender(faceDictionary):
     f=faceDictionary['faceAttributes']
     gender=f['gender']
     return gender
 
-def getRectangle2(faceDictionary):
-    rect = faceDictionary['faceRectangle']
-    left = rect['left']
-    top = rect['top']
-    bottom = left + rect['height']
-    right = top + rect['width']
-    return (left,top,right,bottom)
-
+#This function is not used below but can be used to blur the faces for confidential purpouses. 
 def blurRegions(x,im,n):
     ic=im.crop(x)
     for i in range(n):
         ic=ic.filter(ImageFilter.GaussianBlur)     
     im.paste(ic,x)
     return im
-
+#returns the array of emotions
 def getEmotion(faceDictionary):
     f=faceDictionary['faceAttributes']
     emotion=f['emotion']
@@ -78,8 +72,8 @@ vision_base_url = "https://japaneast.api.cognitive.microsoft.com/face/v1.0/detec
 analyze_url = vision_base_url + "analyze"
 
 # Set image_path to the local path of an image that you want to analyze.
-image_counter=0
-image_counter2=0
+image_counter=0 #Counter Variable to read the image file
+image_counter2=0 #Counter Variable to write the image file after the filter(depending on the emotion) has been applied. 
 while True:
         
     image_path = '/Users/dukeglacia/Downloads/test_images/%d.jpg'%image_counter
@@ -90,10 +84,10 @@ while True:
     headers    = {'Ocp-Apim-Subscription-Key': subscription_key,
                       'Content-Type': 'application/octet-stream'}
     params = {
-        'returnFaceId': 'true',
-        'returnFaceLandmarks': 'false',
+        'returnFaceId': 'true',#Face ID
+        'returnFaceLandmarks': 'false',#The coordinates of the individual parts of the face
         'returnFaceAttributes': 'age,gender,headPose,smile,facialHair,glasses,' +
-        'emotion,hair,makeup,occlusion,accessories,blur,exposure,noise'
+        'emotion,hair,makeup,occlusion,accessories,blur,exposure,noise'#The sttributes to be returned
     }
 
     response = requests.post(
@@ -102,17 +96,13 @@ while True:
 
     # The 'analysis' object contains various fields that describe the image. The most
     # relevant caption for the image is obtained from the 'description' property.
+    
+    #returns the response from the API request in a JSON format
     analysis = response.json()
-#         print(analysis)
-        # image_caption = analysis["description"]["captions"][0]["text"].capitalize()
-
-        # Display the image and overlay it with the caption.
     image = Image.open(BytesIO(image_data))
-#         plt.imshow(image)
-#         plt.axis("off")
-#         plt.show()
-        # _ = plt.title(image_caption, size="x-large", y=-0.1)
+
     draw = ImageDraw.Draw(image)
+    #analysis contains the various faces in individual frames. Iterating through each item gives the information for each face.
     for face in analysis:
         if getEmotion(face)==0:
             draw.rectangle(getRectangle(face), outline='red',fill=(255,0,0))
