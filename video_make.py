@@ -7,23 +7,23 @@ import os
 def movie_to_image(num_cut):
     
 
-#     video_path = '/hoge/hoge.mov'   # キャプチャ動画のパス（ファイル名含む）
+
     output_path = '/Users/dukeglacia/Downloads/test_images/'  # 出力するフォルダパス
 
-    # キャプチャ動画読み込み（キャプチャ構造体生成）
+    # capture video 
     capture = cv2.VideoCapture(0)
 
-    img_count = 0  # 保存した候補画像数
-    frame_count = 0  # 読み込んだフレーム画像数
+    img_count = 0  # No of images saved
+    frame_count = 0  # No of frames read
 
-    # フレーム画像がある限りループ
+    # while there is a frame input
     while(capture.isOpened()):
-         # フレーム画像一枚取得
+         # collect one frame
         ret, frame = capture.read()
         if ret == False:
             break
 
-        # 指定した数だけフレーム画像を間引いて保存
+  
         if frame_count % num_cut == 0:
             img_file_name = output_path + str(img_count) + ".jpg"
             cv2.imwrite(img_file_name, frame)
@@ -31,11 +31,11 @@ def movie_to_image(num_cut):
 
         frame_count += 1
 
-    # キャプチャ構造体開放
+    # release the capture
     capture.release()
 
 
 if __name__ == '__main__':    
 
-    # 間引き数を10にしてフレーム画像抽出
+    # read frames per numcut frames
     movie_to_image(int(1))
